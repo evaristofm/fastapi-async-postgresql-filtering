@@ -1,7 +1,10 @@
 from datetime import date
-from pydantic import BaseModel
+from typing import Optional, TypeVar
+from fastapi import HTTPException
+from pydantic import BaseModel, validator
 from app.models.person import Sex
 
+T = TypeVar("T")
 
 class PersonCreate(BaseModel):
     name: str
@@ -16,3 +19,8 @@ class PersonCreate(BaseModel):
         if hasattr(Sex, v):
             raise HTTPException(status_code=400, detail="Invalid input sex")
         return v
+
+
+class ResponseSchema(BaseModel):
+    detail: str
+    result: Optional[T] = None
