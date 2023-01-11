@@ -9,21 +9,20 @@ from app.models import Person
 class PersonRepository:
 
     @staticmethod
-    async def create(person: PersonCreate) -> Person:
+    async def create(person: PersonCreate):
         """Create a new person."""
         db.add(Person(**person.dict()))
-        await db.commit_rollback()
-        db.refresh(person)
-        return person
-    
-    @staticmethod
-    async def get_by_id(person_id: int) -> Person:
-        """Get a person by id."""
-        query = select(Person).where(Person.id == person_id)
-        return (await db.execute(query)).scarlar_one_or_none()
+        await commit_rollback()
 
+    """Get a person by id."""
     @staticmethod
-    async def update_by_id(person_id: int, form_person: PersonCreate) -> Person:
+    async def get_by_id(person_id: int):
+        """ retrieve person data by id """
+        query = select(Person).where(Person.id == person_id)
+        return (await db.execute(query)).scalar_one_or_none()
+        
+    @staticmethod
+    async def update(person_id: int, form_person: PersonCreate) -> Person:
         """Update person data"""
         query = update(Person)\
         .where(Person.id == person_id)\
@@ -31,11 +30,11 @@ class PersonRepository:
         .execution_options(synchronize_session="fetch")
 
         await db.execute(query)
-        await db.commit_rollback()
+        await commit_rollback()
 
     @staticmethod
-    async def delete_by_id(person_id: int) -> None:
+    async def delete(person_id: int) -> None:
         """Delete a person by id."""
         query = delete(Person).where(Person.id == person_id)
         await db.execute(query)
-        await db.commit_rollback()
+        await commit_rollback()
