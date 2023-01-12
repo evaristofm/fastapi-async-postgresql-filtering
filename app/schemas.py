@@ -1,8 +1,9 @@
 from datetime import date
-from typing import Optional, TypeVar
+from typing import Optional, TypeVar, Generic, List
 
 from fastapi import HTTPException
 from pydantic import BaseModel, validator
+from pydantic.generics import GenericModel
 
 from app.models.person import Sex
 
@@ -26,3 +27,10 @@ class PersonCreate(BaseModel):
 class ResponseSchema(BaseModel):
     detail: str
     result: Optional[T] = None
+
+class PageResponse(GenericModel, Generic[T]):
+    """ The response for a pagination query"""
+    page_number: int
+    page_size: int
+    total_pages: int
+    content: List[T]
